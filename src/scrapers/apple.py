@@ -1,4 +1,5 @@
 """Scraper for Apple Careers (Machine Learning & AI + Data Science teams)."""
+
 from __future__ import annotations
 
 import logging
@@ -26,7 +27,7 @@ _ROLE_ID_RE = re.compile(r"/details/([^/]+)/")
 # Defense-in-depth title/team filter in case Apple changes the team URL params.
 KEYWORDS = re.compile(
     r"\b(data scientist|machine learning|\bml\b|\bai\b|artificial intelligence|"
-    r"deep learning|data science|research scientist|applied scientist|generative ai|llm)\b",
+    r"deep learning|data science|research scientist|applied scientist|generative ai|software engineer|llm)\b",
     re.IGNORECASE,
 )
 
@@ -87,16 +88,22 @@ class AppleScraper(BaseScraper):
             if not m:
                 continue
             role_id = m.group(1)
-            url = f"https://jobs.apple.com{r['href']}" if r["href"].startswith("/") else r["href"]
-            jobs.append(Job(
-                company=self.company,
-                job_id=role_id,
-                title=title,
-                location=r.get("location") or "",
-                url=url,
-                posted_date=_parse_posted(r.get("posted") or ""),
-                team=team,
-            ))
+            url = (
+                f"https://jobs.apple.com{r['href']}"
+                if r["href"].startswith("/")
+                else r["href"]
+            )
+            jobs.append(
+                Job(
+                    company=self.company,
+                    job_id=role_id,
+                    title=title,
+                    location=r.get("location") or "",
+                    url=url,
+                    posted_date=_parse_posted(r.get("posted") or ""),
+                    team=team,
+                )
+            )
 
         log.info("Apple: parsed %d jobs", len(jobs))
         return jobs

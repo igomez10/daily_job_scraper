@@ -4,6 +4,7 @@ Google does not expose posting dates anywhere in the rendered HTML or detail pag
 so the scraper only returns the current first page of results sorted by date.
 Deduplication is handled by the shared seen-jobs store in `src/seen_store.py`.
 """
+
 from __future__ import annotations
 
 import logging
@@ -26,7 +27,7 @@ _JOB_ID_RE = re.compile(r"jobs/results/(\d+)-")
 
 KEYWORDS = re.compile(
     r"\b(data scientist|machine learning|\bml\b|\bai\b|artificial intelligence|"
-    r"deep learning|data science|research scientist|applied scientist|generative ai|llm)\b",
+    r"deep learning|data science|research scientist|applied scientist|generative ai|software engineer|llm)\b",
     re.IGNORECASE,
 )
 
@@ -108,15 +109,17 @@ class GoogleScraper(BaseScraper):
                 url = href
             else:
                 url = f"https://www.google.com/about/careers/applications/{href.lstrip('/')}"
-            jobs.append(Job(
-                company=self.company,
-                job_id=job_id,
-                title=title,
-                location=r.get("location") or "",
-                url=url,
-                posted_date=None,
-                team=None,
-            ))
+            jobs.append(
+                Job(
+                    company=self.company,
+                    job_id=job_id,
+                    title=title,
+                    location=r.get("location") or "",
+                    url=url,
+                    posted_date=None,
+                    team=None,
+                )
+            )
 
         log.info("Google: parsed %d jobs", len(jobs))
         return jobs
